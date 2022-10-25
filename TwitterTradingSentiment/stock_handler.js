@@ -1,20 +1,21 @@
 const axios = require("axios");
-const app = express();
+require("dotenv").config();
 const options = {
   method: "GET",
-  url: "https://yh-finance.p.rapidapi.com/market/get-trending-tickers",
-  params: { region: "US" },
+  url: "https://yh-finance.p.rapidapi.com/stock/v2/get-recommendations",
+  params: { symbol: "INTC" },
   headers: {
-    "X-RapidAPI-Key": "9a9ba72e2fmsh96a9c4e1f101546p1e8695jsn89dd50fb4425",
+    "X-RapidAPI-Key": process.env.YAHOO_API,
     "X-RapidAPI-Host": "yh-finance.p.rapidapi.com",
   },
 };
 // Redis setup
-const redisClient = redis.createClient();
-redisClient.connect().catch((err) => {
-  console.log(err);
-});
+//const redisClient = redis.createClient();
+//redisClient.connect().catch((err) => {
+//console.log(err);
+//});
 // AWS Setup
+const AWS = require("aws-sdk");
 AWS.config.update({
   region: "ap-southeast-2",
   apiVersion: "latest",
@@ -24,7 +25,7 @@ AWS.config.update({
     sessionToken: process.env.AWS_SESSION_TOKEN,
   },
 });
-const AWS = require("aws-sdk");
+
 // Cloud Services Set-up
 
 // Create unique bucket name
@@ -45,7 +46,30 @@ module.exports = {
     axios
       .request(options)
       .then(function (response) {
-        console.log(response.data); //Change to return value
+        console.log(response.data.finance.result[0]);
+        var tickers = [];
+        response.data.finance.result[0].quotes.forEach((stock) => {
+          rule =
+            "((" +
+            stock.symbol +
+            ") OR (" +
+            "$" +
+            stock.symbol +
+            ") OR (" +
+            stock.shortName +
+            "))" +
+            " lang:en";
+          tickers.push({
+            name: stock.shortName,
+            symbol: stock.symbol,
+            price: stock.regularMarketPrice,
+            change: stock.regularMarketChangePercent,
+            sentiment: 0,
+            storageState: 0,
+          });
+        });
+
+        console.log(tickers);
       })
       .catch(function (error) {
         console.error(error); //More error handling and maybe relevant error message
