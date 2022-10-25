@@ -3,7 +3,7 @@ const needle = require("needle");
 // The code below sets the bearer token from your environment variables
 // To set environment variables on macOS or Linux, run the export command below from the terminal:
 // export BEARER_TOKEN='YOUR-TOKEN'
-const token = process.env.BearerToken;
+const token = "AAAAAAAAAAAAAAAAAAAAAG0ShAEAAAAAcdimYTWFAkhdIy28%2FfV3sZrr7AY%3DVmwyPHBKyrt0gThaEe9HHH0BDUEf3yVniJAZ3e3XGJ4wnzdClV";
 
 const rulesURL = "https://api.twitter.com/2/tweets/search/stream/rules";
 const streamURL = "https://api.twitter.com/2/tweets/search/stream";
@@ -15,15 +15,14 @@ const streamURL = "https://api.twitter.com/2/tweets/search/stream";
 
 // Edit rules as desired below
 const rules = [
+
+
   {
-    value: "stock",
-    tag: "stock",
-  },
-  {
-    value: "AMZN lang:en",
-    tag: "Amazon Filter",
-  },
+    value: "RBLX OR (Roblox Corporation) OR $RBLX OR #RBLX",
+    tag: "RBLX Filter",
+  }
 ];
+
 
 async function getAllRules() {
   const response = await needle("get", rulesURL, {
