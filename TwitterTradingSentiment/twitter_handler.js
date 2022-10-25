@@ -1,9 +1,10 @@
 const needle = require("needle");
+require("dotenv").config();
 
 // The code below sets the bearer token from your environment variables
 // To set environment variables on macOS or Linux, run the export command below from the terminal:
 // export BEARER_TOKEN='YOUR-TOKEN'
-const token = process.env.BearerToken;
+const token = process.env.BEARER_TOKEN;
 
 const rulesURL = "https://api.twitter.com/2/tweets/search/stream/rules";
 const streamURL = "https://api.twitter.com/2/tweets/search/stream";
@@ -16,13 +17,22 @@ const streamURL = "https://api.twitter.com/2/tweets/search/stream";
 // Edit rules as desired below
 const rules = [
   {
-    value: "stock",
-    tag: "stock",
+    value: "((CSCO) OR ($CSCO) OR (Cisco Systems, Inc.)) lang:en",
+    tag: "Cisco Systems, Inc.",
   },
   {
-    value: "AMZN lang:en",
-    tag: "Amazon Filter",
+    value: "((AMD) OR ($AMD) OR (Advanced Micro Devices, Inc.)) lang:en",
+    tag: "Advanced Micro Devices, Inc.",
   },
+  {
+    value: "((MSFT) OR ($MSFT) OR (Microsoft Corporation)) lang:en",
+    tag: "Microsoft Corporation",
+  },
+  {
+    value: "((IBM) OR ($IBM) OR (International Business Machines)) lang:en",
+    tag: "International Business Machines",
+  },
+  { value: "((AAPL) OR ($AAPL) OR (Apple Inc.)) lang:en", tag: "Apple Inc." },
 ];
 
 async function getAllRules() {
@@ -131,24 +141,25 @@ function streamConnect(retryAttempt) {
 
   return stream;
 }
+module.exports = {
+  startStream: async function () {
+    let currentRules;
 
-(async () => {
-  let currentRules;
+    try {
+      // Gets the complete list of rules currently applied to the stream
+      currentRules = await getAllRules();
 
-  try {
-    // Gets the complete list of rules currently applied to the stream
-    currentRules = await getAllRules();
+      // Delete all rules. Comment the line below if you want to keep your existing rules.
+      await deleteAllRules(currentRules);
 
-    // Delete all rules. Comment the line below if you want to keep your existing rules.
-    await deleteAllRules(currentRules);
+      // Add rules to the stream. Comment the line below if you don't want to add new rules.
+      await setRules();
+    } catch (e) {
+      console.error(e);
+      process.exit(1);
+    }
 
-    // Add rules to the stream. Comment the line below if you don't want to add new rules.
-    await setRules();
-  } catch (e) {
-    console.error(e);
-    process.exit(1);
-  }
-
-  // Listen to the stream.
-  streamConnect(0);
-})();
+    // Listen to the stream.
+    streamConnect(0);
+  },
+};
