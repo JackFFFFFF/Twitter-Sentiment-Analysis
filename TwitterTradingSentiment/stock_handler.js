@@ -2,11 +2,11 @@ const axios = require("axios");
 require("dotenv").config();
 const options = {
   method: "GET",
-  url: "https://yh-finance.p.rapidapi.com/stock/v2/get-recommendations",
-  params: { symbol: "INTC" },
+  url: "https://yahoo-finance15.p.rapidapi.com/api/yahoo/co/collections/most_actives",
+  params: { start: "0" },
   headers: {
     "X-RapidAPI-Key": process.env.YAHOO_API,
-    "X-RapidAPI-Host": "yh-finance.p.rapidapi.com",
+    "X-RapidAPI-Host": "yahoo-finance15.p.rapidapi.com",
   },
 };
 // Redis setup
@@ -46,9 +46,9 @@ module.exports = {
     axios
       .request(options)
       .then(function (response) {
-        console.log(response.data.finance.result[0]);
+        //console.log(response.data.quotes);
         var tickers = [];
-        response.data.finance.result[0].quotes.forEach((stock) => {
+        response.data.quotes.forEach((stock) => {
           rule =
             "((" +
             stock.symbol +
@@ -60,7 +60,7 @@ module.exports = {
             "))" +
             " lang:en";
           tickers.push({
-            name: stock.shortName,
+            name: stock.longName,
             symbol: stock.symbol,
             price: stock.regularMarketPrice,
             change: stock.regularMarketChangePercent,

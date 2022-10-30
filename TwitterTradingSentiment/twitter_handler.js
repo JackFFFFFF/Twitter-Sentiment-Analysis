@@ -16,9 +16,6 @@ const streamURL = "https://api.twitter.com/2/tweets/search/stream";
 
 // Edit rules as desired below
 const rules = [
-
-
-  
   {
     value: "((MSFT) OR ($MSFT) OR (Microsoft Corporation)) lang:en",
     tag: "Microsoft Corporation",
@@ -29,7 +26,6 @@ const rules = [
   },
   { value: "((AAPL) OR ($AAPL) OR (Apple Inc.)) lang:en", tag: "Apple Inc." },
 ];
-
 
 async function getAllRules() {
   const response = await needle("get", rulesURL, {
