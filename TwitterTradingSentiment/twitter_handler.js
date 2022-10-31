@@ -13,20 +13,33 @@ const streamURL = "https://api.twitter.com/2/tweets/search/stream";
 // will be applied to the Tweets return to show which rule they matched
 // with a standard project with Basic Access, you can add up to 25 concurrent rules to your stream, and
 // each rule can be up to 512 characters long
-
-// Edit rules as desired below
-const rules = [
-  {
-    value: "((MSFT) OR ($MSFT) OR (Microsoft Corporation)) lang:en",
-    tag: "Microsoft Corporation",
-  },
-  {
-    value: "((IBM) OR ($IBM) OR (International Business Machines)) lang:en",
-    tag: "International Business Machines",
-  },
-  { value: "((AAPL) OR ($AAPL) OR (Apple Inc.)) lang:en", tag: "Apple Inc." },
+rules = [
+  "((AMD) OR ($AMD) OR (Advanced Micro Devices, Inc.)) lang:en",
+  "((AMZN) OR ($AMZN) OR (Amazon.com, Inc.)) lang:en",
+  "((NIO) OR ($NIO) OR (NIO Inc.)) lang:en",
+  "((NYCB) OR ($NYCB) OR (New York Community Bancorp, Inc.)) lang:en",
+  "((TWTR) OR ($TWTR) OR (Twitter, Inc.)) lang:en",
+  "((NVDA) OR ($NVDA) OR (NVIDIA Corporation)) lang:en",
+  "((T) OR ($T) OR (AT&T Inc.)) lang:en",
+  "((CS) OR ($CS) OR (Credit Suisse Group AG)) lang:en",
+  "((VALE) OR ($VALE) OR (Vale S.A.)) lang:en",
+  "((SNAP) OR ($SNAP) OR (Snap Inc.)) lang:en",
+  "((PINS) OR ($PINS) OR (Pinterest, Inc.)) lang:en",
+  "((F) OR ($F) OR (Ford Motor Company)) lang:en",
+  "((CMCSA) OR ($CMCSA) OR (Comcast Corporation)) lang:en",
+  "((INTC) OR ($INTC) OR (Intel Corporation)) lang:en",
+  "((ITUB) OR ($ITUB) OR (Itaú Unibanco Holding S.A.)) lang:en",
+  "((TSLA) OR ($TSLA) OR (Tesla, Inc.)) lang:en",
+  "((GOOG) OR ($GOOG) OR (Alphabet Inc.)) lang:en",
+  "((META) OR ($META) OR (Meta Platforms, Inc.)) lang:en",
+  "((CCL) OR ($CCL) OR (Carnival Corporation & plc)) lang:en",
+  "((XPEV) OR ($XPEV) OR (XPeng Inc.)) lang:en",
+  "((MSFT) OR ($MSFT) OR (Microsoft Corporation)) lang:en",
+  "((PBR) OR ($PBR) OR (Petróleo Brasileiro S.A. - Petrobras)) lang:en",
+  "((GOOGL) OR ($GOOGL) OR (Alphabet Inc.)) lang:en",
+  "((AAPL) OR ($AAPL) OR (Apple Inc.)) lang:en",
+  "((SHOP) OR ($SHOP) OR (Shopify Inc.)) lang:en",
 ];
-
 async function getAllRules() {
   const response = await needle("get", rulesURL, {
     headers: {
@@ -69,7 +82,7 @@ async function deleteAllRules(rules) {
   return response.body;
 }
 
-async function setRules() {
+async function setRules(rules) {
   const data = {
     add: rules,
   };
@@ -134,7 +147,7 @@ function streamConnect(retryAttempt) {
   return stream;
 }
 module.exports = {
-  startStream: async function () {
+  startStream: async function (rules) {
     let currentRules;
 
     try {
@@ -145,7 +158,7 @@ module.exports = {
       await deleteAllRules(currentRules);
 
       // Add rules to the stream. Comment the line below if you don't want to add new rules.
-      await setRules();
+      await setRules(rules);
     } catch (e) {
       console.error(e);
       process.exit(1);
