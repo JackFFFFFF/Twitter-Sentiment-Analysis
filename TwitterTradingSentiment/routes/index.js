@@ -7,9 +7,12 @@ var twitterHandler = require("../twitter_handler");
 /* GET home page. */
 router.get("/", async function (req, res, next) {
   await storageHandler.retreiveKeys().then(async (keys) => {
-    await stockHandler.makeRules(keys);
+    await stockHandler.makeRules(keys).then((rules) => {
+      console.log(rules);
+      twitterHandler.startStream(rules);
+    });
   });
-  //twitterHandler.startStream();
+
   res.render("index", { title: "Express" });
 });
 function PrintJSON(json) {

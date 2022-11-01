@@ -40,6 +40,9 @@ module.exports = {
     const promises = tickers.map(async (ticker) => {
       ticker = ticker.substring(6);
       let rule = await storageHandler.retrieveObject(ticker).then((stock) => {
+        stock.name = stock.name.replace("&", "");
+        stock.name = stock.name.replace("|", "");
+
         syntax =
           "((" +
           stock.symbol +
@@ -50,12 +53,22 @@ module.exports = {
           stock.name +
           "))" +
           " lang:en";
-        return syntax;
+        if (stock.symbol.length <= 2) {
+          syntax =
+            "(($" +
+            stock.symbol +
+            ") OR (" +
+            "$" +
+            stock.name +
+            "))" +
+            " lang:en";
+        }
+        return { value: syntax, tag: stock.name };
       });
       //console.log(rule);
       return rule;
     });
     var rules = await Promise.all(promises);
-    console.log(rules);
+    return rules;
   },
 };
