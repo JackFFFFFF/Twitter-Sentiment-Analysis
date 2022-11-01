@@ -37,7 +37,7 @@ async function storeObject(data) {
   const redisKey = s3Key;
   redisClient.get(redisKey).then((result) => {
     if(result){
-        //all good
+        return true;
     }else{
       redisClient.setEx(
         redisKey,
