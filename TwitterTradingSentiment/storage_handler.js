@@ -66,6 +66,16 @@ async function storeObject(data) {
 async function retrieveObject(symbol) {
   const key = symbol;
   const s3Key = `stock-${key}`;
+  const redisKey = s3Key;
+
+  redisClient.get(redisKey).then((result) => {
+    if(result){
+      const resultJSON = JSON.parse(result);
+      resultJSON["source"] = "Redis Cache";
+      return resultJSON;
+    } //if found in redis do the thing, otherwise move on
+  });
+
   const params = { Bucket: bucketName, Key: s3Key };
   return await s3
     .getObject(params)
