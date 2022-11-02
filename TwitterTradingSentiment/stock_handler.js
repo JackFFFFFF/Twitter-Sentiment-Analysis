@@ -45,30 +45,20 @@ module.exports = {
 
         syntax =
           "((" +
-          stock.symbol +
-          ") OR (" +
           "$" +
           stock.symbol +
           ") OR (" +
           stock.name +
           "))" +
-          " lang:en";
-        if (stock.symbol.length <= 2) {
-          syntax =
-            "(($" +
-            stock.symbol +
-            ") OR (" +
-            "$" +
-            stock.name +
-            "))" +
-            " lang:en";
-        }
-        return { value: syntax, tag: stock.name };
+          " -is:retweet lang:en";
+
+        return { value: syntax, tag: stock.symbol + "/" + stock.name };
       });
       //console.log(rule);
       return rule;
     });
     var rules = await Promise.all(promises);
+    rules = rules.slice(0, 25);
     return rules;
   },
 };

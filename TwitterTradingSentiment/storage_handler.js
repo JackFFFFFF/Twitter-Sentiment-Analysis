@@ -69,7 +69,7 @@ async function retrieveObject(symbol) {
 
   redisClient.get(redisKey).then((result) => {
     if (result) {
-      const resultJSON = JSON.parse(result.Body.toString("utf-8"));
+      const resultJSON = JSON.parse(result);
       resultJSON["source"] = "Redis Cache";
       return resultJSON;
     } //if found in redis do the thing, otherwise move on

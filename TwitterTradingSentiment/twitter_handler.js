@@ -1,6 +1,6 @@
 const needle = require("needle");
 require("dotenv").config();
-
+var commsHandler = require("./communication_handler");
 // The code below sets the bearer token from your environment variables
 // To set environment variables on macOS or Linux, run the export command below from the terminal:
 // export BEARER_TOKEN='YOUR-TOKEN'
@@ -86,8 +86,11 @@ function streamConnect(retryAttempt) {
   stream
     .on("data", (data) => {
       try {
+        //console.log(data);
         const json = JSON.parse(data);
         console.log(json);
+        commsHandler.sendData(json); //Send post of tweet text to server
+
         // A successful connection resets retry count.
         retryAttempt = 0;
       } catch (e) {
@@ -95,7 +98,7 @@ function streamConnect(retryAttempt) {
           data.detail ===
           "This stream is currently at the maximum allowed connection limit."
         ) {
-          console.log(data.detail);
+          console.log(e);
           process.exit(1);
         } else {
           // Keep alive signal received. Do nothing.
@@ -104,12 +107,13 @@ function streamConnect(retryAttempt) {
     })
     .on("err", (error) => {
       if (error.code !== "ECONNRESET") {
-        console.log(error.code);
+        console.log(error);
         process.exit(1);
       } else {
         // This reconnection logic will attempt to reconnect when a disconnection is detected.
         // To avoid rate limits, this logic implements exponential backoff, so the wait time
         // will increase if the client cannot reconnect to the stream.
+        console.log(error);
         setTimeout(() => {
           console.warn("A connection error occurred. Reconnecting...");
           streamConnect(++retryAttempt);
