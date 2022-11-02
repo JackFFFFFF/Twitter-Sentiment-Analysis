@@ -19,7 +19,6 @@ redisClient.connect().catch((err) => {
   console.log(err);
 });
 
-
 s3.createBucket({ Bucket: bucketName })
   .promise()
   .then(() => console.log(`Created bucket: ${bucketName}`))
@@ -36,9 +35,9 @@ async function storeObject(data) {
   const s3Key = `stock-${key}`;
   const redisKey = s3Key;
   redisClient.get(redisKey).then((result) => {
-    if(result){
-        return true;
-    }else{
+    if (result) {
+      return true;
+    } else {
       redisClient.setEx(
         redisKey,
         3600,
@@ -69,8 +68,8 @@ async function retrieveObject(symbol) {
   const redisKey = s3Key;
 
   redisClient.get(redisKey).then((result) => {
-    if(result){
-      const resultJSON = JSON.parse(result);
+    if (result) {
+      const resultJSON = JSON.parse(result.Body.toString("utf-8"));
       resultJSON["source"] = "Redis Cache";
       return resultJSON;
     } //if found in redis do the thing, otherwise move on
