@@ -12,6 +12,13 @@ AWS.config.update({
   },
 });
 const s3 = new AWS.S3({ apiVersion: "2006-03-01" });
+
+const redis = require("redis");
+const redisClient = redis.createClient();
+redisClient.connect().catch((err) => {
+  console.log(err);
+});
+
 s3.createBucket({ Bucket: bucketName })
   .promise()
   .then(() => console.log(`Created bucket: ${bucketName}`))
@@ -21,10 +28,23 @@ s3.createBucket({ Bucket: bucketName })
       console.log(`Error creating bucket: ${err}`);
     }
   });
+
 async function storeObject(data) {
   //Create object upload promise
   const key = data.symbol;
   const s3Key = `stock-${key}`;
+  const redisKey = s3Key;
+  redisClient.get(redisKey).then((result) => {
+    if (result) {
+      return true;
+    } else {
+      redisClient.setEx(
+        redisKey,
+        3600,
+        JSON.stringify({ source: "Redis Cache", ...data })
+      );
+    }
+  });
   const params = {
     Bucket: bucketName,
     Key: s3Key,
@@ -41,9 +61,20 @@ async function storeObject(data) {
       console.log(err, err.stack);
     });
 }
+
 async function retrieveObject(symbol) {
   const key = symbol;
   const s3Key = `stock-${key}`;
+  const redisKey = s3Key;
+
+  redisClient.get(redisKey).then((result) => {
+    if (result) {
+      const resultJSON = JSON.parse(result.Body.toString("utf-8"));
+      resultJSON["source"] = "Redis Cache";
+      return resultJSON;
+    } //if found in redis do the thing, otherwise move on
+  });
+
   const params = { Bucket: bucketName, Key: s3Key };
   return await s3
     .getObject(params)
@@ -56,6 +87,7 @@ async function retrieveObject(symbol) {
       console.log(error);
     });
 }
+
 function retreiveKeys() {
   //copied from here https://stackoverflow.com/a/69754448/8096569
   return new Promise((resolve, reject) => {
@@ -91,6 +123,7 @@ function retreiveKeys() {
     }
   });
 }
+
 module.exports = {
   storeObject,
   retrieveObject,
