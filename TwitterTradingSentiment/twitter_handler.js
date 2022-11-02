@@ -1,6 +1,6 @@
 const needle = require("needle");
 require("dotenv").config();
-
+var commsHandler = require("./communication_handler");
 // The code below sets the bearer token from your environment variables
 // To set environment variables on macOS or Linux, run the export command below from the terminal:
 // export BEARER_TOKEN='YOUR-TOKEN'
@@ -88,6 +88,8 @@ function streamConnect(retryAttempt) {
       try {
         const json = JSON.parse(data);
         console.log(json);
+        commsHandler.sendData(json); //Send post of tweet text to server
+
         // A successful connection resets retry count.
         retryAttempt = 0;
       } catch (e) {
@@ -95,7 +97,6 @@ function streamConnect(retryAttempt) {
           data.detail ===
           "This stream is currently at the maximum allowed connection limit."
         ) {
-          console.log(data.detail);
           process.exit(1);
         } else {
           // Keep alive signal received. Do nothing.

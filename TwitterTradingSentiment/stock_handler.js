@@ -63,7 +63,7 @@ module.exports = {
             "))" +
             " lang:en";
         }
-        return { value: syntax, tag: stock.name };
+        return { value: syntax, tag: symbol + "/" + stock.name };
       });
       //console.log(rule);
       return rule;
