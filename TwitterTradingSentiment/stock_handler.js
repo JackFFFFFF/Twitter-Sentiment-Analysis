@@ -24,11 +24,14 @@ module.exports = {
             symbol: stock.symbol,
             price: stock.regularMarketPrice,
             changePercent: stock.regularMarketChangePercent,
-            sentiment: 0,
-            storageState: 0,
+            postiveSentimentTotal: 0,
+            negativeSentimentTotal: 0,
+            postiveSentimentSum: 0,
+            negativeSentimentSum: 0,
+            neutralSentimentSum: 0,
           };
           tickers.push(stock.symbol);
-          storageHandler.storeObject(stockJSON);
+          storageHandler.storeObject(stockJSON, false);
         });
         return tickers;
       })
