@@ -99,7 +99,7 @@ function streamConnect(retryAttempt) {
           retryAttempt = 0;
         }
       }catch{
-        console.log("Get fucked");
+        console.log("Stream overloaded");
       }
       
 
