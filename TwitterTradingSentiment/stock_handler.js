@@ -11,6 +11,7 @@ const options = {
   },
 };
 module.exports = {
+  //Gets tickers from Yahoo API and stores them
   getTickers: async function () {
     const axios = require("axios");
     return await axios
@@ -39,10 +40,12 @@ module.exports = {
         console.error(error); //More error handling and maybe relevant error message
       });
   },
+  //Retrieves tickers and converts each one to a twitter stream rule
   makeRules: async function (tickers) {
     const promises = tickers.map(async (ticker) => {
       ticker = ticker.substring(6);
       let rule = await storageHandler.retrieveObject(ticker).then((stock) => {
+        //Remove random symbols from name
         stock.name = stock.name.replace("&", "");
         stock.name = stock.name.replace("|", "");
 
@@ -60,6 +63,7 @@ module.exports = {
       //console.log(rule);
       return rule;
     });
+    //TODO: Let user specifiy rules
     var rules = await Promise.all(promises);
     rules = rules.slice(0, 25);
     return rules;

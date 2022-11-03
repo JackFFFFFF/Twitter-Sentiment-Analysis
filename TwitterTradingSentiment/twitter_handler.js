@@ -82,7 +82,7 @@ function streamConnect(retryAttempt) {
     },
     timeout: 20000,
   });
-
+  //TODO: Erorr Handle this so it doesn't crash
   stream
     .on("data", (data) => {
       try {
