@@ -8,6 +8,17 @@ const storageHandler = require("../TwitterTradingSentiment/storage_handler");
 const wordListPath = require("word-list");
 const catWords = require("categorized-words");
 
+const AWS = require("aws-sdk");
+AWS.config.update({
+  region: "ap-southeast-2",
+  apiVersion: "latest",
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    sessionToken: process.env.AWS_SESSION_TOKEN,
+  },
+});
+
 //Simple words
 const dictionary = catWords.N.concat(catWords.V)
   .concat(catWords.A)
@@ -19,10 +30,37 @@ const corpus = fs
   .split("\n")
   .concat(dictionary);
 
-function getSentiment(text, symbol) {
+async function getSentiment(text, symbol) {
   let sentiment = Sediment.analyze(text);
   console.log(text);
-  console.log("Has Sentiment: " + sentiment.score + " about " + symbol);
+
+  await storageHandler.retrieveObject(symbol).then((stock) => {
+    if (sentiment.score > 0) {
+      stock.postiveSentimentTotal++;
+      stock.postiveSentimentSum += sentiment.score;
+      console.log(
+        "Positive sentiment about stored" +
+          symbol +
+          ", score:" +
+          sentiment.score
+      );
+    } else if (sentiment.score < 0) {
+      stock.negativeSentimentSum++;
+      stock.negativeSentimentSum += sentiment.score;
+      console.log(
+        "Negative sentiment about stored" +
+          symbol +
+          ", score:" +
+          sentiment.score
+      );
+    } else {
+      stock.neutralSentimentSum++;
+      console.log(
+        "Neutral sentiment about stored" + symbol + ", score:" + sentiment.score
+      );
+    }
+    storageHandler.storeObject(stock, true);
+  });
 }
 
 async function filterTweet(text, symbol) {

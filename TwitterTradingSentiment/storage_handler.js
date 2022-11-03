@@ -29,22 +29,30 @@ s3.createBucket({ Bucket: bucketName })
     }
   });
 
-async function storeObject(data) {
+async function storeObject(data, update) {
   //Create object upload promise
   const key = data.symbol;
   const s3Key = `stock-${key}`;
   const redisKey = s3Key;
-  redisClient.get(redisKey).then((result) => {
-    if (result) {
-      return true;
-    } else {
-      redisClient.setEx(
-        redisKey,
-        3600,
-        JSON.stringify({ source: "Redis Cache", ...data })
-      );
-    }
-  });
+  redisClient
+    .get(redisKey)
+    .then((result) => {
+      if (result && !update) {
+        return true;
+      } else {
+        if (update) {
+          console.log("Updated redis");
+        }
+        redisClient.setEx(
+          redisKey,
+          3600,
+          JSON.stringify({ source: "Redis Cache", ...data })
+        );
+      }
+    })
+    .catch((err) => {
+      console.log(err); //Error handle
+    });
   const params = {
     Bucket: bucketName,
     Key: s3Key,
