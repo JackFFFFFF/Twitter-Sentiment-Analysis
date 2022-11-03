@@ -75,13 +75,18 @@ async function retrieveObject(symbol) {
   const s3Key = `stock-${key}`;
   const redisKey = s3Key;
 
-  redisClient.get(redisKey).then((result) => {
-    if (result) {
-      const resultJSON = JSON.parse(result);
-      resultJSON["source"] = "Redis Cache";
-      return resultJSON;
-    } //if found in redis do the thing, otherwise move on
-  });
+  redisClient
+    .get(redisKey)
+    .then((result) => {
+      if (result) {
+        const resultJSON = JSON.parse(result);
+        resultJSON["source"] = "Redis Cache";
+        return resultJSON;
+      } //if found in redis do the thing, otherwise move on
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 
   const params = { Bucket: bucketName, Key: s3Key };
   return await s3
