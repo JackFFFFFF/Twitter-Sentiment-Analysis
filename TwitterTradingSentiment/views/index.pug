@@ -9,7 +9,10 @@ html
         h1 Home Page
         h2 
         p Select the name of the Stock you are interested in from the dropdown below, and then select the Submit button
-        input(type="text" id="name" placeholder="Insert Stock Name...")
+        select(id="name")
+          - var i = 0;
+          for rule in ruleList 
+            option(value=i++) #{rule.tag}
         button(onclick="myFunction()") Submit
         script.  
             function myFunction() {
