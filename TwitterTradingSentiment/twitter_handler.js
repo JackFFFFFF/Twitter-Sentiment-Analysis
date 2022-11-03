@@ -85,25 +85,28 @@ function streamConnect(retryAttempt) {
   //TODO: Erorr Handle this so it doesn't crash
   stream
     .on("data", (data) => {
-      try {
+      try{
         //console.log(data);
-        const json = JSON.parse(data);
-        console.log(json);
-        commsHandler.sendData(json); //Send post of tweet text to server
-
-        // A successful connection resets retry count.
-        retryAttempt = 0;
-      } catch (e) {
-        if (
-          data.detail ===
-          "This stream is currently at the maximum allowed connection limit."
-        ) {
+        if(data.title == 'ConnectionException'){
+          console.log("Connection errored out!");
           console.log(e);
           process.exit(1);
-        } else {
-          // Keep alive signal received. Do nothing.
+        }else{
+          const json = JSON.parse(data);
+          commsHandler.sendData(json); //Send post of tweet text to server
+          console.log(json);
+          // A successful connection resets retry count.
+          retryAttempt = 0;
         }
+      }catch{
+        console.log("Stream overloaded " + retryAttempt);
+        setTimeout(() => {
+          console.warn("A connection error occurred. Reconnecting...");
+          streamConnect(++retryAttempt);
+        }, 2 ** retryAttempt);
       }
+      
+
     })
     .on("err", (error) => {
       if (error.code !== "ECONNRESET") {

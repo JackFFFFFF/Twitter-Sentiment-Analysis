@@ -17,6 +17,7 @@
     "languagedetect": "^2.0.0",
     "morgan": "~1.9.1",
     "natural": "^5.2.3",
+    "path": "^0.12.7",
     "pug": "^3.0.2",
     "sediment": "^1.0.2",
     "sentiment": "^5.0.2",
