@@ -86,7 +86,7 @@ function streamConnect(retryAttempt) {
   stream
     .on("data", (data) => {
       try {
-        //console.log(data);
+        console.log(data);
         const json = JSON.parse(data);
         console.log(json);
         commsHandler.sendData(json); //Send post of tweet text to server
