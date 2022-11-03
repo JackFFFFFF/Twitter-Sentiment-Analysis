@@ -86,7 +86,7 @@ function streamConnect(retryAttempt) {
   stream
     .on("data", (data) => {
       try{
-        console.log(data);
+        //console.log(data);
         if(data.title == 'ConnectionException'){
           console.log("Connection errored out!");
           console.log(e);
@@ -94,12 +94,16 @@ function streamConnect(retryAttempt) {
         }else{
           const json = JSON.parse(data);
           commsHandler.sendData(json); //Send post of tweet text to server
-  
+          console.log(json);
           // A successful connection resets retry count.
           retryAttempt = 0;
         }
       }catch{
-        console.log("Stream overloaded");
+        console.log("Stream overloaded " + retryAttempt);
+        setTimeout(() => {
+          console.warn("A connection error occurred. Reconnecting...");
+          streamConnect(++retryAttempt);
+        }, 2 ** retryAttempt);
       }
       
 
