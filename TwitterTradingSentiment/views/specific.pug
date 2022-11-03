@@ -1,0 +1,18 @@
+doctype html
+html
+  head
+    title Stock Sentiment Home Page
+    link(rel='stylesheet', href='/stylesheets/style.css')
+    
+  body
+    block content
+        h1 Specific Stock Page
+        h2 Stock ##{index}: #{ruleList[index].tag}
+        p #{JSON.stringify(data)}
+
+        button(onclick="myFunction()") Back
+        script.  
+            function myFunction() {
+                window.location.href = '/';
+            };
+        

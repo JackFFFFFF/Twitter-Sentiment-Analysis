@@ -1,78 +1,71 @@
 const axios = require("axios");
+const storageHandler = require("./storage_handler");
 require("dotenv").config();
 const options = {
   method: "GET",
-  url: "https://yh-finance.p.rapidapi.com/stock/v2/get-recommendations",
-  params: { symbol: "INTC" },
+  url: "https://yahoo-finance15.p.rapidapi.com/api/yahoo/co/collections/most_actives",
+  params: { start: "0" },
   headers: {
     "X-RapidAPI-Key": process.env.YAHOO_API,
-    "X-RapidAPI-Host": "yh-finance.p.rapidapi.com",
+    "X-RapidAPI-Host": "yahoo-finance15.p.rapidapi.com",
   },
 };
-// Redis setup
-//const redisClient = redis.createClient();
-//redisClient.connect().catch((err) => {
-//console.log(err);
-//});
-// AWS Setup
-const AWS = require("aws-sdk");
-AWS.config.update({
-  region: "ap-southeast-2",
-  apiVersion: "latest",
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    sessionToken: process.env.AWS_SESSION_TOKEN,
-  },
-});
-
-// Cloud Services Set-up
-
-// Create unique bucket name
-const bucketName = "stock-tickers-store";
-const s3 = new AWS.S3({ apiVersion: "2006-03-01" });
-s3.createBucket({ Bucket: bucketName })
-  .promise()
-  .then(() => console.log(`Created bucket: ${bucketName}`))
-  .catch((err) => {
-    // Ignore 409 errors which indicate that the bucket already exists
-    if (err.statusCode !== 409) {
-      console.log(`Error creating bucket: ${err}`);
-    }
-  });
 module.exports = {
-  getTickers: function () {
+  //Gets tickers from Yahoo API and stores them
+  getTickers: async function () {
     const axios = require("axios");
-    axios
+    return await axios
       .request(options)
-      .then(function (response) {
-        console.log(response.data.finance.result[0]);
+      .then(async function (response) {
+        //console.log(response.data.quotes);
         var tickers = [];
-        response.data.finance.result[0].quotes.forEach((stock) => {
-          rule =
-            "((" +
-            stock.symbol +
-            ") OR (" +
-            "$" +
-            stock.symbol +
-            ") OR (" +
-            stock.shortName +
-            "))" +
-            " lang:en";
-          tickers.push({
-            name: stock.shortName,
+        await response.data.quotes.forEach((stock) => {
+          let stockJSON = {
+            name: stock.longName,
             symbol: stock.symbol,
             price: stock.regularMarketPrice,
-            change: stock.regularMarketChangePercent,
-            sentiment: 0,
-            storageState: 0,
-          });
+            changePercent: stock.regularMarketChangePercent,
+            postiveSentimentTotal: 0,
+            negativeSentimentTotal: 0,
+            postiveSentimentSum: 0,
+            negativeSentimentSum: 0,
+            neutralSentimentSum: 0,
+          };
+          tickers.push(stock.symbol);
+          storageHandler.storeObject(stockJSON, false);
         });
-
-        console.log(tickers);
+        return tickers;
       })
       .catch(function (error) {
         console.error(error); //More error handling and maybe relevant error message
       });
+  },
+  //Retrieves tickers and converts each one to a twitter stream rule
+  makeRules: async function (tickers) {
+    const promises = tickers.map(async (ticker) => {
+      ticker = ticker.substring(6);
+      let rule = await storageHandler.retrieveObject(ticker).then((stock) => {
+        //Remove random symbols from name
+        stock.name = stock.name.replace("&", "");
+        stock.name = stock.name.replace("|", "");
+
+        syntax =
+          "((" +
+          "$" +
+          stock.symbol +
+          ") OR (" +
+          stock.name +
+          "))" +
+          " -is:retweet lang:en";
+
+        return { value: syntax, tag: stock.symbol + "/" + stock.name };
+      });
+      //console.log(rule);
+      return rule;
+    });
+    //TODO: Let user specifiy rules
+    var rules = await Promise.all(promises);
+    rules = rules.slice(0, 25);
+    return rules;
   },
 };
