@@ -1,5 +1,24 @@
-extends layout
+doctype html
+html
+  head
+    title Stock Sentiment Home Page
+    link(rel='stylesheet', href='/stylesheets/style.css')
+    
+  body
+    block content
+        h1 Home Page
+        h2 
+        p Select the name of the Stock you are interested in from the dropdown below, and then select the Submit button
+        select(id="name")
+          - var i = 0;
+          for rule in ruleList 
+            option(value=i++) #{rule.tag}
+        button(onclick="myFunction()") Submit
+        script.  
+            function myFunction() {
+                var input = document.getElementById("name").value;
+                
 
-block content
-  h1= title
-  p Welcome to #{title}
+                window.location.href = '/specific/'+input;
+            };
+        

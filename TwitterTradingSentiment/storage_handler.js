@@ -74,13 +74,13 @@ async function retrieveObject(symbol) {
   const key = symbol;
   const s3Key = `stock-${key}`;
   const redisKey = s3Key;
-
   redisClient
     .get(redisKey)
     .then((result) => {
       if (result) {
         const resultJSON = JSON.parse(result);
         resultJSON["source"] = "Redis Cache";
+        
         return resultJSON;
       } //if found in redis do the thing, otherwise move on
     })
@@ -94,6 +94,14 @@ async function retrieveObject(symbol) {
     .promise()
     .then((result) => {
       const resultJSON = JSON.parse(result.Body.toString("utf-8"));
+      const resultJSON2 = resultJSON;
+      resultJSON2["source"] = "Redis Cache";
+      redisClient.setEx(
+        redisKey,
+        3600,
+        JSON.stringify({ resultJSON2 })
+      );
+
       return resultJSON;
     })
     .catch((error) => {
