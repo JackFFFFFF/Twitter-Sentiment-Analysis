@@ -8,11 +8,37 @@ html
     block content
         h1 Specific Stock Page
         h2 Stock ##{index}: #{ruleList[index].tag}
+        b $#{data["price"]} USD
+        p(id="changePercent") #{data["changePercent"]}%
+        h3 Current Sentiment on Twitter
+        div(class="graphic")
+          div(class="row")
+            h6 Sentiment
+            div(class="chart", style="width: 900px")
+              span(class="positive", id="positive")
+                span(class="value") Positive
+                span(class="tooltiptext") Total Positive Sentiment: #{data["postiveSentimentTotal"]}
+              span(class="neutral", id="neutral")
+                span(class="value") Neutral
+                span(class="tooltiptext") Total Neutral Sentiment: #{data["neutralSentimentSum"]}
+              span(class="negative", id="negative")
+                span(class="value") Negative
+                span(class="tooltiptext") Total Negative Sentiment: #{data["negativeSentimentSum"]}
+              
+        script(src='/stylesheets/chart.js', type="text/javascript")
         p #{JSON.stringify(data)}
-
         button(onclick="myFunction()") Back
         script.  
             function myFunction() {
                 window.location.href = '/';
             };
-        
+            document.getElementById("positive").style.width = #{posrat}+"%";
+            document.getElementById("neutral").style.width =  #{neutrat}+"%";
+            document.getElementById("negative").style.width = #{negrat}+"%";
+            if(#{data["changePercent"]} < 0){
+              document.getElementById("changePercent").style.color = "red";
+            }else{
+              document.getElementById("changePercent").style.color = "green";
+            }
+            
+            
