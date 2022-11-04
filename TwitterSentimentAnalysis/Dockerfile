@@ -1,4 +1,4 @@
-FROM node:erbium
+FROM node
 
 #Setting environment variables (overridden when using docker run)
 #ENV AWS_ACCESS_KEY_ID=YYTOKEN
@@ -37,8 +37,10 @@ RUN npm install word-list
 RUN npm install categorized-words
 
 RUN npm install sediment
+
+RUN npm install redis
 #Exposing port 3001 as default port for localhost
-EXPOSE 3001
+EXPOSE 3000
 
 #Utilizing npm start command for express application
 CMD ["npm", "start"]
