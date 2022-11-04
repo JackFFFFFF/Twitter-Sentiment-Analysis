@@ -1,8 +1,149 @@
-body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-}
-
 a {
   color: #00B7FF;
+}
+body {
+	background-color: #272b34;
+	font-family: 'Khula', sans-serif;
+	font-weight: 300;
+	color: white;
+	line-height: 1em;
+  padding: 2em;
+}
+h3, h6 {
+	margin: 0;
+	line-height: 1em;
+}
+h3 {
+	margin-bottom: 1em;
+}
+h6 {
+	font-size: .8em;
+	padding: 0 0 .5em;
+    color: #919191;
+}
+figure {
+	margin: 0 auto;
+	max-width: 1100px;
+	position: relative;
+}
+.graphic {
+	padding-left: 30px;
+}
+.row {
+	margin-bottom: 1.5em;
+}
+@keyframes expand {
+	from {width: 0%;}
+	to {width: 100%;}
+}
+@media screen and (min-width: 768px) {
+	@keyframes expand {
+		from {width: 0%;}
+		to {width: calc(100% - 75px);}
+	}
+}
+.chart {
+	overflow: hidden;
+	width: 0%;
+	animation: expand 1.5s ease forwards;
+}
+.row + .row .chart {
+	animation-delay: .2s;
+}
+.row + .row + .row .chart {
+	animation-delay: .4s;
+}
+.positive {
+	display: block;
+	height: 100px;
+  width: var(--width);
+	color: #fff;
+	font-size: .75em;
+	float: left;
+	background-color: #00692c;
+	position: relative;
+	overflow: hidden;
+	opacity: 1;
+	transition: opacity, .3s ease;
+	cursor: pointer;
+}
+.positive:hover {
+	opacity: .65;
+}
+.neutral {
+	display: block;
+	height: 100px;
+	color: #fff;
+	font-size: .75em;
+	float: left;
+	background-color: #3b3b3b;
+	position: relative;
+	overflow: hidden;
+	opacity: 1;
+	transition: opacity, .3s ease;
+	cursor: pointer;
+}
+.neutral:hover {
+	opacity: .65;
+}
+.negative {
+	display: block;
+	height: 100px;
+  width: var(--width);
+	color: #fff;
+	font-size: .75em;
+	float: left;
+	background-color: #680b08;
+	position: relative;
+	overflow: hidden;
+	opacity: 1;
+	transition: opacity, .3s ease;
+	cursor: pointer;
+}
+.negative:hover {
+	opacity: .65;
+}
+.value {
+	display: block;
+	line-height: 1em;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%);
+}
+.tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 6px;
+ 
+  /* Position the tooltip text - see examples below! */
+  position: absolute;
+  z-index: 1;
+}
+.positive:hover .tooltiptext {
+  visibility: visible;
+}
+.neutral:hover .tooltiptext {
+  visibility: visible;
+}
+.negative:hover .tooltiptext {
+  visibility: visible;
+}
+@media screen and (min-width: 768px) {
+	h6 {
+		padding: 0;
+		width: 75px;
+		float: left;
+		line-height: 100px;
+	}
+	.block {
+		font-size: 1em;
+	}
+	.legend {
+		width: 50%;
+	}
 }
