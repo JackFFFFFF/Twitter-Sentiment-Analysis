@@ -3,7 +3,7 @@ const LanguageDetect = require("languagedetect");
 const lngDetector = new LanguageDetect();
 var natural = require("natural");
 const fs = require("fs");
-const storageHandler = require("../TwitterTradingSentiment/storage_handler");
+const storageHandler = require("./storage_handler");
 const wordListPath = require("word-list");
 const catWords = require("categorized-words");
 

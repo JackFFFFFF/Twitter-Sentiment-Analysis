@@ -1,4 +1,4 @@
-FROM node:erbium
+FROM node
 
 #Setting environment variables (overridden when using docker run)
 #ENV AWS_ACCESS_KEY_ID=YYTOKEN
@@ -25,6 +25,8 @@ RUN npm install needle
 RUN npm install aws-sdk
 
 RUN npm install dotenv
+
+RUN npm install redis
 
 #Exposing port 3000 as default port for localhost
 EXPOSE 3000
