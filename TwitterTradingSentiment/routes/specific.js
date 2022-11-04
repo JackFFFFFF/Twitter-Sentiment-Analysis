@@ -14,8 +14,23 @@ router.get("/:stockIndex", async function (req, res, next) {
       const stockCode2 = stockCode.split("/")[0];
       await storageHandler.retrieveObject(stockCode2).then((stockVals) => {
         console.log(rules);
+        total = stockVals["postiveSentimentTotal"] + stockVals["neutralSentimentTotal"] + stockVals["negativeSentimentTotal"]
+        console.log()
+        if(! total >= 0){
+          total = 0;
+        }
+        if(total == 0){
+          posrat = 33;
+          negrat = 33;
+          neutrat = 33;
+        }else{
+          posrat = 100 * stockVals["postiveSentimentTotal"] / total;
+          neutrat = 100 * stockVals["neutralSentimentTotal"] / total;
+          negrat = 100 * stockVals["negativeSentimentTotal"] / total;
+        }
 
-        res.render("specific", { ruleList: rules, index: req.params.stockIndex, data: stockVals });
+        res.render("specific", { ruleList: rules, index: req.params.stockIndex, data: stockVals, total: total, posrat: posrat, negrat: negrat, neutrat:neutrat });
+
         twitterHandler.startStream(rules);
       });
       
