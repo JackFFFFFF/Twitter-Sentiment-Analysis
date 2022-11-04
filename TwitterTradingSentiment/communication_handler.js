@@ -1,5 +1,5 @@
 const axios = require("axios");
-let ip = "http://localhost:3001/"; //Change to be dynamic/environment variable
+let ip = "http://54.252.221.62:3000/"; //Change to be dynamic/environment variable
 module.exports = {
   sendData: async function (tweet) {
     const data = await axios

@@ -12,9 +12,10 @@ AWS.config.update({
   },
 });
 const s3 = new AWS.S3({ apiVersion: "2006-03-01" });
-
 const redis = require("redis");
-const redisClient = redis.createClient();
+const redisClient = redis.createClient({
+  url: "redis://" + process.env.ENDPOINT,
+});
 redisClient.connect().catch((err) => {
   console.log(err);
 });
@@ -83,7 +84,7 @@ async function retrieveObject(symbol) {
       if (result) {
         const resultJSON = JSON.parse(result);
         resultJSON["source"] = "Redis Cache";
-        
+
         return resultJSON;
       } //if found in redis do the thing, otherwise move on
     })
@@ -99,11 +100,7 @@ async function retrieveObject(symbol) {
       const resultJSON = JSON.parse(result.Body.toString("utf-8"));
       const resultJSON2 = resultJSON;
       resultJSON2["source"] = "Redis Cache";
-      redisClient.setEx(
-        redisKey,
-        3600,
-        JSON.stringify({ resultJSON2 })
-      );
+      redisClient.setEx(redisKey, 3600, JSON.stringify({ resultJSON2 }));
 
       return resultJSON;
     })
