@@ -34,6 +34,7 @@ async function storeObject(data, update) {
   const key = data.symbol;
   const s3Key = `stock-${key}`;
   const redisKey = s3Key;
+  const data2 = data;
   redisClient
     .get(redisKey)
     .then((result) => {
@@ -43,16 +44,18 @@ async function storeObject(data, update) {
         if (update) {
           console.log("Updated redis");
         }
+        data2["source"] = "Redis Cache";
         redisClient.setEx(
           redisKey,
           3600,
-          JSON.stringify({ source: "Redis Cache", ...data })
+          JSON.stringify({ source: "Redis Cache", ...data2 })
         );
       }
     })
     .catch((err) => {
       console.log(err); //Error handle
     });
+    data["source"] = "S3 Bucket";
   const params = {
     Bucket: bucketName,
     Key: s3Key,
