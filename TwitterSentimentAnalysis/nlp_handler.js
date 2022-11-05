@@ -35,7 +35,7 @@ async function getSentiment(text, symbol) {
   let sentiment = Sediment.analyze(text);
   console.log(text);
 
-  await storageHandler.retrieveObject(symbol).then((stock) => {
+  await storageHandler.retrieveObject(symbol).then(async (stock) => {
     if (sentiment.score > 0) {
       stock.postiveSentimentTotal++;
       stock.postiveSentimentSum += sentiment.score;
@@ -60,7 +60,7 @@ async function getSentiment(text, symbol) {
         "Neutral sentiment about stored" + symbol + ", score:" + sentiment.score
       );
     }
-    storageHandler.storeObject(stock, true);
+    await storageHandler.storeObject(stock, true);
   });
 }
 //General filtering of tweet before sending for sentiment analysis
@@ -97,7 +97,7 @@ async function filterTweet(text, symbol) {
     if (wrongWordsCount > Math.floor(0.2 * wordsCount)) {
       console.log("Majority wrong: " + newText);
     } else {
-      getSentiment(newText, symbol);
+      await getSentiment(newText, symbol);
     }
   }
 }
@@ -114,7 +114,7 @@ function checkLanguage(text) {
 function checkWord(word) {
   let invalid = false;
   //creates new spellcheck with dictionary
-  var spellcheck = new natural.Spellcheck(corpus);
+  var spellcheck = new natural.Spellcheck(dictionary); //going to try out smaller dictionary
 
   //check for number
   let number = /^\d$/.test(word);

@@ -16,10 +16,10 @@ const redis = require("redis");
 const redisClient = redis.createClient({
   url: "redis://" + process.env.ENDPOINT,
 });
+
 redisClient.connect().catch((err) => {
   console.log(err);
 });
-
 s3.createBucket({ Bucket: bucketName })
   .promise()
   .then(() => console.log(`Created bucket: ${bucketName}`))
@@ -56,7 +56,7 @@ async function storeObject(data, update) {
     .catch((err) => {
       console.log(err); //Error handle
     });
-    data["source"] = "S3 Bucket";
+  data["source"] = "S3 Bucket";
   const params = {
     Bucket: bucketName,
     Key: s3Key,

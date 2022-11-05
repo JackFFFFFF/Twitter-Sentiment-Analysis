@@ -7,7 +7,7 @@ var twitterHandler = require("../twitter_handler");
 
 /* GET home page. */
 router.get("/", async function (req, res, next) {
-  await stockHandler.getTickers().then((result)=>{})
+  //await stockHandler.getTickers().then((result)=>{})
   await storageHandler.retreiveKeys().then(async (keys) => {
     await stockHandler.makeRules(keys).then((rules) => {
       console.log(rules);
@@ -15,8 +15,6 @@ router.get("/", async function (req, res, next) {
       twitterHandler.startStream(rules);
     });
   });
-
-  
 });
 function PrintJSON(json) {
   console.log(json);
