@@ -39,7 +39,9 @@ RUN npm install categorized-words
 RUN npm install sediment
 
 RUN npm install redis
-#Exposing port 3001 as default port for localhost
+
+RUN npm install pm2 -g
+#Exposing port 3000 as default port for localhost
 EXPOSE 3000
 
 #Utilizing npm start command for express application
