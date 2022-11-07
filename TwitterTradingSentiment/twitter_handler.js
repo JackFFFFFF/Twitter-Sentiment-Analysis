@@ -84,7 +84,7 @@ function streamConnect(retryAttempt) {
   });
   //TODO: Erorr Handle this so it doesn't crash
   stream
-    .on("data", (data) => {
+    .on("data", async (data) => {
       try {
         //console.log(data);
         if (data.title == "ConnectionException") {
@@ -92,14 +92,12 @@ function streamConnect(retryAttempt) {
           console.log(e);
           process.exit(1);
         } else if (data.title == "Too Many Requests" || data.status == 429) {
-          setTimeout(() => {
-            console.warn("Too many tweets coming through");
-            streamConnect(++retryAttempt);
-          }, 10 ** retryAttempt);
+          console.warn("Too many tweets coming through");
         } else {
           const json = JSON.parse(data);
-          commsHandler.sendData(json); //Send post of tweet text to server
           console.log(json);
+          commsHandler.sendData(json); //Send post of tweet text to server
+
           // A successful connection resets retry count.
           retryAttempt = 0;
         }

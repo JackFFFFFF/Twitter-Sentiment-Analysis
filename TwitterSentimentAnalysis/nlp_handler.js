@@ -60,7 +60,7 @@ async function getSentiment(text, symbol) {
         "Neutral sentiment about stored" + symbol + ", score:" + sentiment.score
       );
     }
-    await storageHandler.storeObject(stock, true);
+    storageHandler.storeObject(stock, true);
   });
 }
 //General filtering of tweet before sending for sentiment analysis
@@ -97,7 +97,7 @@ async function filterTweet(text, symbol) {
     if (wrongWordsCount > Math.floor(0.2 * wordsCount)) {
       console.log("Majority wrong: " + newText);
     } else {
-      await getSentiment(newText, symbol);
+      getSentiment(newText, symbol);
     }
   }
 }
@@ -114,7 +114,7 @@ function checkLanguage(text) {
 function checkWord(word) {
   let invalid = false;
   //creates new spellcheck with dictionary
-  var spellcheck = new natural.Spellcheck(dictionary); //going to try out smaller dictionary
+  var spellcheck = new natural.Spellcheck(corpus);
 
   //check for number
   let number = /^\d$/.test(word);

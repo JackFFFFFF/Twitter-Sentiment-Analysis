@@ -40,9 +40,9 @@ RUN npm install sediment
 
 RUN npm install redis
 
-RUN npm install pm2 -g
+RUN npm install -g pm2@3.2.4
 #Exposing port 3000 as default port for localhost
 EXPOSE 3000
 
 #Utilizing npm start command for express application
-CMD ["npm", "start"]
+CMD ["pm2-runtime", "start", "ecosystem.config.js"]
